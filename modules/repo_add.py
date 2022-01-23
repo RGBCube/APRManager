@@ -26,7 +26,7 @@ class RepoAdd(commands.Cog):
         await ctx.reply(embed=embed.error("Your link is waiting to be approved or it was approved before"), mention_author=False)
 
     @commands.command()
-    async def submissions(ctx):
+    async def submissions(self, ctx):
         subs = config.sboard.search(funnel="?")
         response_str = ""
         response_list = []
