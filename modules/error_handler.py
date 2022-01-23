@@ -19,19 +19,17 @@ class CommandErrorHandler(commands.Cog):
         if cog:
             if cog._get_overridden_method(cog.cog_command_error) is not None:
                 return
-        ignored = (commands.CommandNotFound, )
+        ignored = (commands.CommandNotFound, commands.DisabledCommand)
         error = getattr(error, 'original', error)
         if isinstance(error, ignored):
             return
-        if isinstance(error, commands.DisabledCommand):
-            await ctx.send(f'{ctx.command} has been disabled.')
         elif isinstance(error, commands.NoPrivateMessage):
             try:
-                await ctx.reply(embed=embed.error(f'You cannot use this command in DMs'))
+                await ctx.reply(embed=embed.error(f'You cannot use this command in DMs'), mention_author=False)
             except discord.HTTPException:
                 pass
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.reply(embed=embed.error("Please give all the required arguments"))
+            await ctx.reply(embed=embed.error("Please give all the required arguments"), mention_author=False)
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
