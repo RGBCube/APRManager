@@ -26,10 +26,12 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, commands.NoPrivateMessage):
             try:
                 await ctx.reply(embed=embed.error(f'You cannot use this command in DMs'), mention_author=False)
-            except discord.HTTPException:
+            except (discord.HTTPException, discord.Forbidden):
                 pass
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.reply(embed=embed.error("Please give all the required arguments"), mention_author=False)
+        elif isinstance(error, commands.MissingAnyRole):
+            await ctx.reply(embed=embed.error("You cannot use this command"), mention_author=False)
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
