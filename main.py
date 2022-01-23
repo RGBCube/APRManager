@@ -21,8 +21,8 @@ for file_path in Path("./modules").glob("**/*.py"):
         continue
     try:
         bot.load_extension(file_path)
-    except Exception as fail:
-        fail = str(fail).split("\n")
+    except Exception:
+        fail = str(traceback.format_exc()[:-1]).split("\n")
         fail = "\n   │".join(fail)
         length = len(f"Couldn't load {file_name}:") - 5
         that = "   ╭" + length*"─" + "╯"
