@@ -108,4 +108,4 @@ async def unload(ctx, module: str):
     await ctx.reply(embed=embed.error(f"There is no such module named {module}"), mention_author=False)
 
 keep_alive()
-bot.run("OTAyNDA1MDg4MTM4NjUzNzI2.YXd8Og.4PwBfKKpjUXIxbKPiM3OoigVOUA")
+bot.run("OTAyNDA1MDg4MTM4NjUzNzI2.YXd8Og.4PwBfKKpjUXIxbKPiM3OoigVOUA") #its invaild not worth trying
