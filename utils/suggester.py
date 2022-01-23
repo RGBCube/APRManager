@@ -158,7 +158,10 @@ class SuggestionBoard:
             for symbol in to_funnel.keys():
                 if symbol in funnel:
                     all_suggestions.update(to_funnel[symbol])
-            return all_suggestions.get(sID, None)
+            sub = all_suggestions.get(sID, None)
+            if sub is not None:
+                sub["sID"] = sID
+            return sub
         suggestions_list = []
         for section, symbol in [(draft, "?"), (approved, "+"), (rejected, "+")]:
             if symbol not in funnel:
