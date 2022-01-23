@@ -29,9 +29,8 @@ class CommandErrorHandler(commands.Cog):
                 await ctx.reply(embed=embed.error(f'You cannot use this command in DMs'))
             except discord.HTTPException:
                 pass
-        elif isinstance(error, commands.BadArgument):
-            if ctx.command.qualified_name == 'tag list':
-                await ctx.send('I could not find that member. Please try again.')
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await ctx.reply(embed=embed.error("Please give all the required arguments"))
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
