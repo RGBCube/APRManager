@@ -22,16 +22,16 @@ class emojis:
 
 class channels:
 
-    draft = 934365215418613850
+    draft = 934765555238449162
 
-    approved = 934497235457159249
+    approved = 934765607793098762
 
-    rejected = 934497248639860756
+    rejected = 934765633441239111
 
 
 class roles:
 
-    approvers = [934364031962189824, 934364196953530378]
+    approvers = [934773705970700328]
 
 class internal:
 
