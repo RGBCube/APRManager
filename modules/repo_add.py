@@ -25,20 +25,51 @@ class RepoAdd(commands.Cog):
             return await ctx.reply(embed=embed.success("Link submitted", "Please wait for it to be approved"), mention_author=False)
         await ctx.reply(embed=embed.error("Your link is waiting to be approved or it was approved before"), mention_author=False)
 
+    @commands.command()
+    async def submissions(ctx):
+        subs = config.sboard.search(funnel="?")
+        response_str = ""
+        response_list = []
+        for sub in subs:
+            sID = sub["sID"]
+            content = sub["content"]
+            author_id = sub["author"]
+            response_list.append(
+                f"sID: `{sID}`\nSubmission: {content}\nAuthor: <@{author_id}>\n")
+        if len(response_list) == 0:
+            response_str = "*No draft submissions*"
+        else:
+            response_str = "\n".join(response_list)
+        await ctx.reply(embed=embed.success("Successfully fetched all draft submissions", response_str[:-1]))
+
     @submission.command()
+    @commands.has_any_role(*config.roles.approvers)
     async def approve(self, ctx, sID: str):
         if config.sboard.search(sid=sID, funnel="?") is None:
             return await ctx.reply(embed=embed.error("No such submission"), mention_author=False)
         config.sboard.approve_suggestion(sID)
         # sends the link to the db
         await ctx.reply(embed=embed.success("Submission approved"), mention_author=False)
+        member = await ctx.guild.fetch_member(config.sboard.search(sID)["author"])
+        try:
+            member.send(embed=embed.success("Your submission has been approved",
+                        f"Submission: " + config.sboard.search(sID)["content"]))
+        except:
+            pass
 
     @submission.command()
+    @commands.has_any_role(*config.roles.approvers)
     async def reject(self, ctx, sID: str):
         if config.sboard.search(sid=sID, funnel="?") is None:
             return await ctx.reply(embed=embed.error("No such submission"), mention_author=False)
         config.sboard.reject_suggestion(sID)
         await ctx.reply(embed=embed.success("Submission rejected"), mention_author=False)
+        member = await ctx.guild.fetch_member(config.sboard.search(sID)["author"])
+        try:
+            member.send(embed=embed.error("Your submission has been rejected",
+                        f"Submission: " + config.sboard.search(sID)["content"]))
+        except:
+            pass
 
 
 def setup(bot):
