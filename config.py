@@ -31,10 +31,7 @@ class channels:
 
 class roles:
 
-    manager = 934364196953530378
-
-    approver = 934364031962189824
-
+    approvers = [934364031962189824, 934364196953530378]
 
 class internal:
 
