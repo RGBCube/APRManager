@@ -2,6 +2,7 @@ import discord
 import traceback
 import sys
 import config
+from utils.embed import embed
 from discord.ext import commands
 
 
