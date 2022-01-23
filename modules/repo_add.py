@@ -50,12 +50,18 @@ class RepoAdd(commands.Cog):
         config.sboard.approve_suggestion(sID)
         # sends the link to the db
         await ctx.reply(embed=embed.success("Submission approved"), mention_author=False)
-        member = await ctx.guild.fetch_member(config.sboard.search(sID)["author"])
+        sub = config.sboard.search(sid=sID)
+        sID = sub["sID"]
+        content = sub["content"]
+        author_id = sub["author"]
+        member = await ctx.guild.fetch_member(author_id)
         try:
             member.send(embed=embed.success("Your submission has been approved",
                         f"Submission: " + config.sboard.search(sID)["content"]))
         except:
             pass
+        channel = ctx.guild.get_channel(config.channels.approved)
+        await channel.send(embed=embed.success("Submission approved", f"sID: `{sID}`\nSubmission: {content}\nAuthor: <@{author_id}>"))
 
     @submission.command()
     @commands.has_any_role(*config.roles.approvers)
@@ -64,12 +70,18 @@ class RepoAdd(commands.Cog):
             return await ctx.reply(embed=embed.error("No such submission"), mention_author=False)
         config.sboard.reject_suggestion(sID)
         await ctx.reply(embed=embed.success("Submission rejected"), mention_author=False)
-        member = await ctx.guild.fetch_member(config.sboard.search(sID)["author"])
+        sub = config.sboard.search(sid=sID)
+        sID = sub["sID"]
+        content = sub["content"]
+        author_id = sub["author"]
+        member = await ctx.guild.fetch_member(author_id)
         try:
             member.send(embed=embed.error("Your submission has been rejected",
                         f"Submission: " + config.sboard.search(sID)["content"]))
         except:
             pass
+        channel = ctx.guild.get_channel(config.channels.rejected)
+        await channel.send(embed=embed.error("Submission rejected", f"sID: `{sID}`\nSubmission: {content}\nAuthor: <@{author_id}>"))
 
 
 def setup(bot):
