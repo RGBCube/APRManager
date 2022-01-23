@@ -40,7 +40,7 @@ class RepoAdd(commands.Cog):
             response_str = "*No draft submissions*"
         else:
             response_str = "\n".join(response_list)
-        await ctx.reply(embed=embed.success("Successfully fetched all draft submissions", response_str[:-1]))
+        await ctx.reply(embed=embed.success("Successfully fetched all draft submissions", response_str[:-1]), mention_author=False)
 
     @submission.command()
     @commands.has_any_role(*config.roles.approvers)
