@@ -10,7 +10,7 @@ class RepoAdd(commands.Cog):
         self.bot = bot
 
     @commands.group()
-    async def submission(ctx):
+    async def submission(self, ctx):
         if ctx.invoked_subcommand is None:
             pass
 
@@ -21,7 +21,7 @@ class RepoAdd(commands.Cog):
         elif config.sboard.search(link, funnel="?+") == []:
             sID = config.sboard.add_suggestion(link, ctx.author.id)
             channel = ctx.guild.get_channel(config.channels.draft)
-            await channel.send(f"Submission: <{link}>\nAuthor: {ctx.author.mention}\n`-submission (approve|reject) {sID}`")
+            await channel.send(f"Submission: <{link}>\nAuthor: {ctx.author.mention}\n`-submission (approve|reject) {sID}`", allowed_mentions=None)
             return await ctx.reply(embed=embed.success("Link submitted", "Please wait for it to be approved"), mention_author=False)
         await ctx.reply(embed=embed.error("Your link is waiting to be approved or it was approved before"), mention_author=False)
 
@@ -48,7 +48,7 @@ class RepoAdd(commands.Cog):
         if config.sboard.search(sid=sID, funnel="?") is None:
             return await ctx.reply(embed=embed.error("No such submission"), mention_author=False)
         config.sboard.approve_suggestion(sID)
-        # sends the link to the db
+        """# sends the link to the db #"""
         await ctx.reply(embed=embed.success("Submission approved"), mention_author=False)
         sub = config.sboard.search(sid=sID)
         sID = sub["sID"]
@@ -56,9 +56,9 @@ class RepoAdd(commands.Cog):
         author_id = sub["author"]
         member = await ctx.guild.fetch_member(author_id)
         try:
-            member.send(embed=embed.success("Your submission has been approved",
-                        f"Submission: " + config.sboard.search(sID)["content"]))
-        except:
+            await member.send(embed=embed.success("Your submission has been approved",
+                        f"Submission: {content}"))
+        except (discord.Forbidden, discord.HTTPException):
             pass
         channel = ctx.guild.get_channel(config.channels.approved)
         await channel.send(embed=embed.success("Submission approved", f"sID: `{sID}`\nSubmission: {content}\nAuthor: <@{author_id}>"))
@@ -76,9 +76,9 @@ class RepoAdd(commands.Cog):
         author_id = sub["author"]
         member = await ctx.guild.fetch_member(author_id)
         try:
-            member.send(embed=embed.error("Your submission has been rejected",
-                        f"Submission: " + config.sboard.search(sID)["content"]))
-        except:
+            await member.send(embed=embed.error("Your submission has been rejected",
+                        f"Submission: {content}"))
+        except (discord.Forbidden, discord.HTTPException):
             pass
         channel = ctx.guild.get_channel(config.channels.rejected)
         await channel.send(embed=embed.error("Submission rejected", f"sID: `{sID}`\nSubmission: {content}\nAuthor: <@{author_id}>"))
