@@ -1,4 +1,4 @@
-# APLManager
+# APRManager
 `-submission approve <sID>` - Approve a submission.
 
 `-submission reject <sID>` - Reject a submission.
