@@ -32,9 +32,6 @@ class CommandErrorHandler(commands.Cog):
             await ctx.reply(embed=embed.error("Please give all the required arguments"), mention_author=False)
         elif isinstance(error, commands.MissingAnyRole):
             await ctx.reply(embed=embed.error("You cannot use this command"), mention_author=False)
-        elif isinstance(error, commands.CheckFailure):
-            if str(ctx.author.id) in config.db.get("blocked", default=[]):
-                await ctx.reply(embed=embed.error("You are blocked from using this bot"), mention_author=False)
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)

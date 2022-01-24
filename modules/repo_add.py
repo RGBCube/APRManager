@@ -10,11 +10,6 @@ class RepoAdd(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-    
-    @commands.check
-    async def is_blocked(self, ctx):
-        blocked = config.db.get("blocked", default=[])
-        return not str(ctx.author.id) in blocked
 
     @commands.group()
     async def block(self, ctx):
@@ -66,7 +61,9 @@ class RepoAdd(commands.Cog):
 
     @commands.command()
     async def submit(self, ctx, link: str):
-        if not link.startswith("https://github.com/") or link.count("/") != 4:
+        if config.internal().is_blocked(str(ctx.author.id)):
+            return await ctx.reply(embed=embed.error("You are blocked from submitting", "retard"), mention_author=False)
+        elif not link.startswith("https://github.com/") or link.count("/") != 4:
             return await ctx.reply(embed=embed.error("Invalid repo link supplied", "Links must start with `https://github.com/` and not end with a `/`.\ne.g `https://github.com/mantikafasi/StupidityDBServer`"), mention_author=False)
         elif link in config.internal.get_devlist():
             return await ctx.reply(embed=embed.error("Your link is already in the PluginRepo database"), mention_author=False)

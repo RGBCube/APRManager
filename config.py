@@ -51,6 +51,10 @@ class internal:
             dev_name, repo_name = dev_raw["github_username"], dev_raw["plugins_repo_name"]
             devlist.append(f"https://github.com/{dev_name}/{repo_name}")
         return devlist
+    
+    @staticmethod
+    def is_blocked(member_id: (str)):
+        return member_id in db.get("blocked", default=[])
 
 
 sboard = SuggestionBoard("./jsondb/suggestions.json")
