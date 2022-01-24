@@ -61,7 +61,7 @@ class RepoAdd(commands.Cog):
 
     @commands.command()
     async def submit(self, ctx, link: str):
-        if config.internal().is_blocked(str(ctx.author.id)):
+        if config.internal.is_blocked(str(ctx.author.id)):
             return await ctx.reply(embed=embed.error("You are blocked from submitting", "retard"), mention_author=False)
         elif not link.startswith("https://github.com/") or link.count("/") != 4:
             return await ctx.reply(embed=embed.error("Invalid repo link supplied", "Links must start with `https://github.com/` and not end with a `/`.\ne.g `https://github.com/mantikafasi/StupidityDBServer`"), mention_author=False)
