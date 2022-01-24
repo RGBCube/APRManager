@@ -18,7 +18,7 @@ class RepoAdd(commands.Cog):
 
     @block.command()
     @commands.has_any_role(*config.roles.approvers)
-    async def add(self, member_id: str):
+    async def add(self, ctx, member_id: str):
         try:
             int(member_id)
         except ValueError:
@@ -34,7 +34,7 @@ class RepoAdd(commands.Cog):
 
     @block.command()
     @commands.has_any_role(*config.roles.approvers)
-    async def remove(self, member_id: str):
+    async def remove(self, ctx, member_id: str):
         try:
             int(member_id)
         except ValueError:
@@ -50,9 +50,9 @@ class RepoAdd(commands.Cog):
 
     @block.command(name="list")
     @commands.has_any_role(*config.roles.approvers)
-    async def _list(self, member_id: str):
+    async def _list(self, ctx, member_id: str):
         blocked_members = config.db.get("blocked", default=[])
-        descstr
+        descstr = ""
         for member_id in blocked_members:
             descstr += f"{member_id} - <@{member_id}>\n"
         if descstr == "":
