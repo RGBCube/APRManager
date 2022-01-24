@@ -11,7 +11,7 @@ class RepoAdd(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.check()
+    @commands.check
     async def is_blocked(self, ctx):
         blocked = config.db.get("blocked", default=[])
         return not str(ctx.author.id) in blocked
