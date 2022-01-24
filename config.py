@@ -53,7 +53,7 @@ class internal:
         return devlist
     
     @staticmethod
-    def is_blocked(member_id: (str)):
+    def is_blocked(member_id: str):
         return member_id in db.get("blocked", default=[])
 
 
