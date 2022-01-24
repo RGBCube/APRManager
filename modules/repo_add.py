@@ -1,6 +1,8 @@
 import discord
+import requests
 from discord.ext import commands
 import config
+import os
 from utils.embed import embed
 
 
@@ -18,19 +20,27 @@ class RepoAdd(commands.Cog):
     async def submit(self, ctx, link: str):
         if not link.startswith("https://github.com/") or link.count("/") != 4:
             return await ctx.reply(embed=embed.error("Invalid repo link supplied", "Links must start with `https://github.com/` and not end with a `/`.\ne.g `https://github.com/mantikafasi/StupidityDBServer`"), mention_author=False)
-        elif config.sboard.search(link, funnel="?+") == []:
-            sID = config.sboard.add_suggestion(link, ctx.author.id)
-            channel = ctx.guild.get_channel(config.channels.draft)
-            await channel.send(f"Submission: <{link}>\nAuthor: {ctx.author.mention}\n`-submission (approve|reject) {sID}`", allowed_mentions=None)
-            return await ctx.reply(embed=embed.success("Link submitted", "Please wait for it to be approved"), mention_author=False)
-        await ctx.reply(embed=embed.error("Your link is waiting to be approved or it was approved before"), mention_author=False)
+        elif link in config.internal.get_devlist():
+            return await ctx.reply(embed=embed.error("Your link is already in the PluginRepo database"), mention_author=False)
+        elif config.sboard.search(link, funnel="?+") != []:
+            return await ctx.reply(embed=embed.error("Your link is waiting to be approved or it was approved before"), mention_author=False)
+        sID = config.sboard.add_suggestion(link, ctx.author.id)
+        channel = ctx.guild.get_channel(config.channels.draft)
+        await channel.send(f"Submission: <{link}>\nAuthor: {ctx.author.mention}\n`-submission (approve|reject) {sID}`", allowed_mentions=None)
+        return await ctx.reply(embed=embed.success("Link submitted", "Please wait for it to be approved"), mention_author=False)
+        
 
     @commands.command()
     async def submissions(self, ctx):
         subs = config.sboard.search(funnel="?")
         response_str = ""
         response_list = []
+        i = 0
         for sub in subs:
+            i += 1
+            if i > 10:
+                break
+            i += 1
             sID = sub["sID"]
             content = sub["content"]
             author_id = sub["author"]
@@ -40,15 +50,22 @@ class RepoAdd(commands.Cog):
             response_str = "*No draft submissions*"
         else:
             response_str = "\n".join(response_list)
-        await ctx.reply(embed=embed.success("Successfully fetched all draft submissions", response_str[:-1]), mention_author=False)
+        await ctx.reply(embed=embed.success("Successfully fetched the first 10 draft submissions", response_str[:-1]), mention_author=False)
 
     @submission.command()
     @commands.has_any_role(*config.roles.approvers)
     async def approve(self, ctx, sID: str):
-        if config.sboard.search(sid=sID, funnel="?") is None:
+        sub = config.sboard.search(sid=sID, funnel="?")
+        if sub is None:
             return await ctx.reply(embed=embed.error("No such submission"), mention_author=False)
+        link = sub["content"]
+        if link in config.internal.get_devlist():
+            return await ctx.reply(content="<@!287555395151593473> <@!512640455834337290>", embed=embed.error("That link is already in the database???", f"Submission: {link}"), mention_author=False)
+        apitoken = os.getenv("apitoken")
+        response = requests.get(f"https://mantikralligi1.pythonanywhere.com/addDeveloper?token={apitoken}&githuburl={link}").text
+        if response != "Success":
+            return await ctx.reply(content="<@!287555395151593473> <@!512640455834337290>", embed=embed.error("Server is offline", "Try again later"), mention_author=False)
         config.sboard.approve_suggestion(sID)
-        """# sends the link to the db #"""
         await ctx.reply(embed=embed.success("Submission approved"), mention_author=False)
         sub = config.sboard.search(sid=sID)
         sID = sub["sID"]

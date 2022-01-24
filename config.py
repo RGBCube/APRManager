@@ -1,5 +1,7 @@
 from utils.suggester import SuggestionBoard
 from utils.jsonx import JSONx
+import requests
+import json
 
 
 class colors:
@@ -36,6 +38,19 @@ class roles:
 class internal:
 
     modules_to_not_load = []
+
+    @staticmethod
+    def get_devlist():
+        devdict = requests.get("https://mantikralligi1.pythonanywhere.com/getDevelopers").text
+        try:
+            devdict = json.loads(devdict)
+        except:
+            return None
+        devlist = []
+        for dev_raw in devdict:
+            dev_name, repo_name = dev_raw["github_username"], dev_raw["plugins_repo_name"]
+            devlist.append(f"https://github.com/{dev_name}/{repo_name}")
+        return devlist
 
 
 sboard = SuggestionBoard("./jsondb/suggestions.json")
