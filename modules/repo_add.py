@@ -28,7 +28,7 @@ class RepoAdd(commands.Cog):
             int(member_id)
         except ValueError:
             return await ctx.reply(embed=embed.error("Invalid member id"), mention_author=False)
-        if len(str(member_id)) != 17:
+        if len(str(member_id)) != 18:
             return await ctx.reply(embed=embed.error("Invalid member id"), mention_author=False)
         blocked = config.db.get("blocked", default=[])
         if member_id in blocked:
@@ -44,7 +44,7 @@ class RepoAdd(commands.Cog):
             int(member_id)
         except ValueError:
             return await ctx.reply(embed=embed.error("Invalid member id"), mention_author=False)
-        if len(str(member_id)) != 17:
+        if len(str(member_id)) != 18:
             return await ctx.reply(embed=embed.error("Invalid member id"), mention_author=False)
         blocked = config.db.get("blocked", default=[])
         if member_id not in blocked:
