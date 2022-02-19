@@ -32,13 +32,13 @@ class Utils:
 
     @staticmethod
     def validate_json(path_to_json: str):
-        if not os.path.isfile(path_to_json):
+        if (
+            os.path.isfile(path_to_json)
+            and os.path.getsize(path_to_json) == 0
+            or not os.path.isfile(path_to_json)
+        ):
             with open(path_to_json, "w") as json_file:
                 json.dump({}, json_file)
-        else:
-            if os.path.getsize(path_to_json) == 0:
-                with open(path_to_json, "w") as json_file:
-                    json.dump({}, json_file)
 
     @staticmethod
     def generate_random(randstr, *, length: int, exclude: list = []):
@@ -155,10 +155,10 @@ class SuggestionBoard:
         if sID is not None:
             all_suggestions = {}
             to_funnel = {"?": draft, "+": approved, "-": rejected}
-            for symbol in to_funnel.keys():
+            for symbol, value_ in to_funnel.items():
                 if symbol in funnel:
-                    all_suggestions.update(to_funnel[symbol])
-            sub = all_suggestions.get(sID, None)
+                    all_suggestions.update(value_)
+            sub = all_suggestions.get(sID)
             if sub is not None:
                 sub["sID"] = sID
             return sub
@@ -166,8 +166,11 @@ class SuggestionBoard:
         for section, symbol in [(draft, "?"), (approved, "+"), (rejected, "+")]:
             if symbol not in funnel:
                 continue
-            for sID, value in section.items():
-                if all(arg in value.get("content", "") for arg in args):
-                    if author is None or value["author"] == author:
-                        suggestions_list.append({"sID": sID, **value})
+            suggestions_list.extend(
+                {"sID": sID, **value}
+                for sID, value in section.items()
+                if all(arg in value.get("content", "") for arg in args)
+                and (author is None or value["author"] == author)
+            )
+
         return suggestions_list

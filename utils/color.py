@@ -117,16 +117,12 @@ def esc(*codes: Union[int, str]) -> str:
 
 def t_(b: Union[bytes, Any]) -> str:
     """ensure text type"""
-    if isinstance(b, bytes):
-        return b.decode()
-    return b
+    return b.decode() if isinstance(b, bytes) else b
 
 
 def b_(t: Union[str, Any]) -> bytes:
     """ensure binary type"""
-    if isinstance(t, str):
-        return t.encode()
-    return t
+    return t.encode() if isinstance(t, str) else t
 
 
 ###############################################################################
@@ -135,11 +131,7 @@ def b_(t: Union[str, Any]) -> bytes:
 
 def make_color(start, end: str) -> Callable[[str], str]:
     def color_func(s: str) -> str:
-        if not use_color():
-            return s
-
-        # render
-        return start + t_(s) + end
+        return s if not use_color() else start + t_(s) + end
 
     return color_func
 
