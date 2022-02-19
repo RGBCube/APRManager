@@ -13,8 +13,7 @@ class RepoAdd(commands.Cog):
 
     @commands.group()
     async def block(self, ctx):
-        if ctx.invoked_subcommand is None:
-            pass
+        pass
 
     @block.command()
     @commands.has_any_role(*config.roles.approvers)
@@ -52,10 +51,11 @@ class RepoAdd(commands.Cog):
     @commands.has_any_role(*config.roles.approvers)
     async def _list(self, ctx, member_id: str):
         blocked_members = config.db.get("blocked", default=[])
-        descstr = ""
-        for member_id in blocked_members:
-            descstr += f"{member_id} - <@{member_id}>\n"
-        if descstr == "":
+        descstr = "".join(
+            f"{member_id} - <@{member_id}>\n" for member_id in blocked_members
+        )
+
+        if not descstr:
             descstr = "*No members blocked*"
         await ctx.reply(embed=embed.success("Successfully fetched the blocked members list", descstr))
 
@@ -90,7 +90,7 @@ class RepoAdd(commands.Cog):
             author_id = sub["author"]
             response_list.append(
                 f"sID: `{sID}`\nSubmission: {content}\nAuthor: <@{author_id}>\n")
-        if len(response_list) == 0:
+        if not response_list:
             response_str = "*No draft submissions*"
         else:
             response_str = "\n".join(response_list)
@@ -98,8 +98,7 @@ class RepoAdd(commands.Cog):
 
     @commands.group()
     async def submission(self, ctx):
-        if ctx.invoked_subcommand is None:
-            pass
+        pass
 
     @submission.command()
     @commands.has_any_role(*config.roles.approvers)

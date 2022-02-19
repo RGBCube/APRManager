@@ -15,8 +15,7 @@ class CommandErrorHandler(commands.Cog):
     async def on_command_error(self, ctx, error):
         if hasattr(ctx.command, 'on_error'):
             return
-        cog = ctx.cog
-        if cog:
+        if cog := ctx.cog:
             if cog._get_overridden_method(cog.cog_command_error) is not None:
                 return
         ignored = (commands.CommandNotFound, commands.DisabledCommand)
@@ -25,7 +24,11 @@ class CommandErrorHandler(commands.Cog):
             return
         elif isinstance(error, commands.NoPrivateMessage):
             try:
-                await ctx.reply(embed=embed.error(f'You cannot use this command in DMs'), mention_author=False)
+                await ctx.reply(
+                    embed=embed.error('You cannot use this command in DMs'),
+                    mention_author=False,
+                )
+
             except (discord.HTTPException, discord.Forbidden):
                 pass
         elif isinstance(error, commands.MissingRequiredArgument):

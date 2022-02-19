@@ -6,20 +6,20 @@ class Utils:
 
     @staticmethod
     def validate_json(path_to_json):
-        if not os.path.isfile(path_to_json):
+        if (
+            os.path.isfile(path_to_json)
+            and os.path.getsize(path_to_json) == 0
+            or not os.path.isfile(path_to_json)
+        ):
             with open(path_to_json, "w") as json_file:
                 json.dump({}, json_file)
-        else:
-            if os.path.getsize(path_to_json) == 0:
-                with open(path_to_json, "w") as json_file:
-                    json.dump({}, json_file)
 
     class PathMagic:
 
         @staticmethod
         def set(main_dict: dict, path: str, *, key: str, value):
             def magic(alt_dict: dict, key: str):
-                if key in alt_dict.keys() and isinstance(alt_dict[key], dict):
+                if key in alt_dict and isinstance(alt_dict[key], dict):
                     return alt_dict
                 alt_dict[key] = {}
                 return alt_dict
